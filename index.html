@@ -11,20 +11,27 @@
   <script>
     d3.select('body') // select an element to host all d3 elements
       .selectAll('div') // selectAll() the elements you want to work with
-      .data([5,6,2,8,4,9,1,7.5,2.5,9,6]) // define your data within an array
+      .data([5,6,2,8,4,9,1,5,7,7,9,6]) // define your data within an array
       .enter() //enter() your data to loop over
       .append('div') //append() new div elements to the DOM for each piece of data
       .text((d) => `$${d.toFixed(2)}`)
-
       .style('padding', '1em')
       .style('background-color', 'red')
       .style('margin', '1px')
       .style('width', (d) => `${d / 10 * 100}%`) // set width of each div to a percentage of the data
       .style('height', '3rem')
       .style('border-radius', '3rem')
-      .style('background', 'linear-gradient(to left, #e66465, #9198e5)')
+      .style('background', function(d) {
+        if (d >= 8) {
+          return'linear-gradient(to left, #e66465, #9198e5)'
+        } else { 
+          return 'linear-gradient(to right, #e66465, #9198e5)'
+        }
+      })
       .style('color', '#fff')
       .style('font-family', 'helvetica')
+      .style('font-size', (d) => `${d*5}px`)
+      .style('opacity', (d) => `${d/2}`)
   </script>
 </body>
 </html>
