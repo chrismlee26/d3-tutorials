@@ -8,6 +8,13 @@
 </head>
 <body>
   <script src="https://d3js.org/d3.v7.min.js"></script>
-  <script></script>
+  <script>
+    d3.select('body') // select an element to host all d3 elements
+      .selectAll('div') // selectAll() the elements you want to work with
+      .data([5,6,2,8,4,9,1]) // define your data within an array
+      .enter() //enter() your data to loop over
+      .append('div') //append() elements to the DOM for each piece of data
+      // .text((d) =>(d)
+  </script>
 </body>
 </html>
