@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 4: Scales</title>
+</head>
+<body>
+  <svg id="svg" width="800" height="800">
+  </svg>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    d3.csv('./data/cities.csv')
+      .then(data => {
+        // Create linear scale
+        const xScale = d3.scaleLinear()
+          .domain([-150, 150]) // Set domain
+          .range([0, 800]) // Set range
+
+        const countryScale = d3.scaleOrdinal()
+          .domain(['USA', 'Pakistan', 'Italy', 'Brazil'])
+          .range(['cornflowerblue', 'gold', 'green', 'tomato'])
+
+        const popScale = d3.scaleLinear()
+          .domain([525010, 14910352]) // Numbers from cities.csv (min/max)
+          .range([20, 200])
+
+        d3.select('#svg')
+          .style('border', '1px solid')
+          .selectAll('circle')
+          .data(data)
+          .enter()
+          .append('circle')
+          .attr('cx', d => xScale(d.x))
+          .attr('cy', d => xScale(d.y))
+          .attr('r', d => popScale(d.population))
+          .attr('fill', d => countryScale(d.country))
+          .attr('opacity', 0.25)  
+      })
+  </script>
+</body>
+</html>
