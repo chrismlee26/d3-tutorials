@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 5: Groups</title>
+</head>
+<body>
+  <svg id="svg" width="800" height="800">
+    <g>
+      <circle></circle>
+      <text></text>
+    </g>
+    <g>
+      <circle></circle>
+      <text></text>
+    </g>
+  </svg>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    d3.csv('./data/cities.csv')
+      .then(data => {
+        // console.log(data)
+        const countries = Array.from(new Set(data.map(d => d.country)))
+        // Extent finds min/max 
+        const x_extent = d3.extent(data, d => parseFloat(d.x))
+        const y_extent = d3.extent(data, d => parseFloat(d.y))
+        const popExtent = d3.extent(data, d => parseInt(d.population))
+
+        const xScale = d3.scaleLinear()
+          .domain(x_extent)
+          .range([700, 100])
+
+        const yScale = d3.scaleLinear()
+          .domain(y_extent)
+          .range([700, 200])
+
+        const countryScale = d3.scaleOrdinal()
+          .domain(countries)
+          .range(['cornflowerblue', 'gold', 'green', 'tomato'])
+
+        const popScale = d3.scaleSqrt()
+          .domain(popExtent)
+          .range([20, 200])
+
+        d3.select('#svg')
+          .style('border', '1px solid')
+          .selectAll('circle')
+          .data(data)
+          .enter()
+          .append('circle')
+          .attr('cx', d => xScale(d.x))
+          .attr('cy', d => yScale(d.y))
+          .attr('r', d => popScale(d.population))
+          .attr('fill', d => countryScale(d.country))
+          .attr('opacity', 0.25)
+
+        const node = d3.select('#svg') // Store all values from d3.select()
+          .style('border', '1px solid')
+          .selectAll('g') // Select all groups <g>
+          .data(data)
+          .enter()
+
+        // Append groups
+        const groups = node
+          .append('g')
+
+        groups
+          .append('circle')
+          .attr('cx', d => xScale(d.x))
+          .attr('cy', d => yScale(d.y))
+          .attr('r', d => popScale(d.population))
+          .attr('fill', `red`)
+          .attr('opacity', 0.25)
+          .attr('fill', d => countryScale(d.country))
+
+        groups
+          .append('text')
+          .text(d => d.name) // set the text
+          .attr('x', d => xScale(d.x))
+          .attr('y', d => yScale(d.y))
+          .style('font-family', 'Helvetica')
+          .style('font-size', '18px')
+      })
+
+  </script>
+</body>
+</html>
