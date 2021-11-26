@@ -99,6 +99,17 @@
         .append('g')
         .attr('transform', `translate(${margin}, 0)`)
         .call(leftAxis)
+
+      // Scatter plot
+      svg
+        .append('g')
+        .selectAll('circle')
+        .data(baData)
+        .enter()
+        .append('circle')
+        .attr('cx', d => xscale(d.date))
+        .attr('cy', d => yscale(d.precipitation))
+        .attr('r', 3)
     }
 
     d3.csv('./data/precipitation.csv')
