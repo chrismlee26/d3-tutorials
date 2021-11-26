@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 6: Challenges</title>
+</head>
+<body>
+  <svg id="svg" width="800" height="800"></svg>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    d3.csv('./data/cities.csv')
+      .then(data => {
+        const x_extent = d3.extent(data, d => parseFloat(d.x))
+        const y_extent = d3.extent(data, d => parseFloat(d.y))
+        const popExtent = d3.extent(data, d => parseInt(d.population))
+
+        const xScale = d3.scaleLinear()
+          .domain(x_extent)
+          .range([200, 650])
+
+        const yScale = d3.scaleLinear()
+          .domain(y_extent)
+          .range([150, 600])
+
+        const countries = Array.from(new Set(data.map(d => d.country)))
+
+        const countryScale = d3.scaleOrdinal()
+          .domain(countries)
+          .range(['cornflowerblue', 'gold', 'green', 'tomato'])
+
+        const popScale = d3.scaleSqrt()
+          .domain(popExtent)
+          .range([20, 200])
+          
+        const node = d3.select('#svg') // Store all values from d3.select()
+          .style('border', '1px solid')
+          .selectAll('g') // Select all groups <g>
+          .data(data)
+          .enter()
+
+
+
+        // Append groups
+        const groups = node
+          .append('g')
+
+        // For each group add circles
+        groups
+          .append('circle')
+          .attr('cx', d => xScale(d.x))
+          .attr('cy', d => yScale(d.y))
+          .attr('r', d => popScale(d.population))
+          .attr('fill', `red`)
+          .attr('opacity', 0.25)
+          .attr('fill', d => countryScale(d.country))
+
+        // Create angle variable
+        const angle = Math.PI * 1.75
+
+        groups
+          .append('text')
+          .text(d => d.label) // set the text
+          .attr('x', d => xScale(d.x) + 20 + (Math.cos(angle) * popScale(d.population)))
+          .attr('y', d => yScale(d.y) + -10 + (Math.sin(angle) * popScale(d.population)))
+          .style('font-family', 'Futura')
+          .style('font-size', '18px')
+
+        // Append lines
+        groups
+          .append('path')
+          .attr('d', d => {
+            const x1 = xScale(d.x)
+            const y1 = yScale(d.y)
+            const x2 = xScale(d.x) + (Math.cos(angle) * (popScale(d.population) + 10))
+            const y2 = yScale(d.y) + (Math.sin(angle) * (popScale(d.population) + 10))
+            const x3 = x2 + 100
+            const y3 = y2
+            return d3.line()([[x1, y1], [x2, y2], [x3, y3]])
+          })
+          .attr('stroke', '#000')
+          .attr('fill', 'none')
+
+        node
+          .append('text')
+          // Set attributes
+          // x & y properties to stay in viewport
+          // use node to create new element for each value
+          // refactor all data into node 
+        })
+  </script>
+</body>
+</html>
