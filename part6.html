@@ -51,10 +51,7 @@
             .attr('opacity', 0.25)
             .attr('fill', d => countryScale(d.country))
 
-          const groups = node
-          .append('g')
-
-          groups
+        node
           .append('text')
             .text(d => d.label) // set the text
             .attr('x', d => xScale(d.x) + 20 + (Math.cos(angle) * popScale(d.population)))
@@ -62,7 +59,7 @@
             .style('font-family', 'Futura')
             .style('font-size', '18px')
 
-          groups
+        node
           .append('path')
             .attr('d', d => {
               const x1 = xScale(d.x)
