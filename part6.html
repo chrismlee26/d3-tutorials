@@ -16,6 +16,7 @@
         const x_extent = d3.extent(data, d => parseFloat(d.x))
         const y_extent = d3.extent(data, d => parseFloat(d.y))
         const popExtent = d3.extent(data, d => parseInt(d.population))
+        const angle = Math.PI * 1.75 // Create angle variable
 
         const xScale = d3.scaleLinear()
           .domain(x_extent)
@@ -41,54 +42,39 @@
           .data(data)
           .enter()
 
+        node
+          .append('circle')
+            .attr('cx', d => xScale(d.x))
+            .attr('cy', d => yScale(d.y))
+            .attr('r', d => popScale(d.population))
+            .attr('fill', `red`)
+            .attr('opacity', 0.25)
+            .attr('fill', d => countryScale(d.country))
 
-
-        // Append groups
-        const groups = node
+          const groups = node
           .append('g')
 
-        // For each group add circles
-        groups
-          .append('circle')
-          .attr('cx', d => xScale(d.x))
-          .attr('cy', d => yScale(d.y))
-          .attr('r', d => popScale(d.population))
-          .attr('fill', `red`)
-          .attr('opacity', 0.25)
-          .attr('fill', d => countryScale(d.country))
-
-        // Create angle variable
-        const angle = Math.PI * 1.75
-
-        groups
+          groups
           .append('text')
-          .text(d => d.label) // set the text
-          .attr('x', d => xScale(d.x) + 20 + (Math.cos(angle) * popScale(d.population)))
-          .attr('y', d => yScale(d.y) + -10 + (Math.sin(angle) * popScale(d.population)))
-          .style('font-family', 'Futura')
-          .style('font-size', '18px')
+            .text(d => d.label) // set the text
+            .attr('x', d => xScale(d.x) + 20 + (Math.cos(angle) * popScale(d.population)))
+            .attr('y', d => yScale(d.y) + -10 + (Math.sin(angle) * popScale(d.population)))
+            .style('font-family', 'Futura')
+            .style('font-size', '18px')
 
-        // Append lines
-        groups
+          groups
           .append('path')
-          .attr('d', d => {
-            const x1 = xScale(d.x)
-            const y1 = yScale(d.y)
-            const x2 = xScale(d.x) + (Math.cos(angle) * (popScale(d.population) + 10))
-            const y2 = yScale(d.y) + (Math.sin(angle) * (popScale(d.population) + 10))
-            const x3 = x2 + 100
-            const y3 = y2
-            return d3.line()([[x1, y1], [x2, y2], [x3, y3]])
-          })
-          .attr('stroke', '#000')
-          .attr('fill', 'none')
-
-        node
-          .append('text')
-          // Set attributes
-          // x & y properties to stay in viewport
-          // use node to create new element for each value
-          // refactor all data into node 
+            .attr('d', d => {
+              const x1 = xScale(d.x)
+              const y1 = yScale(d.y)
+              const x2 = xScale(d.x) + (Math.cos(angle) * (popScale(d.population) + 10))
+              const y2 = yScale(d.y) + (Math.sin(angle) * (popScale(d.population) + 10))
+              const x3 = x2 + 100
+              const y3 = y2
+              return d3.line()([[x1, y1], [x2, y2], [x3, y3]])
+            })
+            .attr('stroke', '#000')
+            .attr('fill', 'none')
         })
   </script>
 </body>
