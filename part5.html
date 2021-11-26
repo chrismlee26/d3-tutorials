@@ -8,34 +8,32 @@
 </head>
 <body>
   <svg id="svg" width="800" height="800">
-    <g>
+    <!-- <g> -->
+      <!-- <circle></circle>
+      <text></text> -->
+    <!-- </g> -->
+    <!-- <g>
       <circle></circle>
       <text></text>
-    </g>
-    <g>
-      <circle></circle>
-      <text></text>
-    </g>
+    </g> -->
   </svg>
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     d3.csv('./data/cities.csv')
       .then(data => {
-        // console.log(data)
         const countries = Array.from(new Set(data.map(d => d.country)))
-        // Extent finds min/max 
         const x_extent = d3.extent(data, d => parseFloat(d.x))
         const y_extent = d3.extent(data, d => parseFloat(d.y))
         const popExtent = d3.extent(data, d => parseInt(d.population))
 
         const xScale = d3.scaleLinear()
           .domain(x_extent)
-          .range([700, 100])
+          .range([200, 650])
 
         const yScale = d3.scaleLinear()
           .domain(y_extent)
-          .range([700, 200])
+          .range([150, 600])
 
         const countryScale = d3.scaleOrdinal()
           .domain(countries)
@@ -83,6 +81,7 @@
           .attr('y', d => yScale(d.y))
           .style('font-family', 'Helvetica')
           .style('font-size', '18px')
+          .style('color', 'black')
       })
 
   </script>
