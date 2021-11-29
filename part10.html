@@ -11,10 +11,56 @@
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
+    function convertToArray(obj) {
+      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+      return months.map(month => {
+      const temp = parseFloat(obj[month])
+      return { month: month, temp }
+      }) 
+    }
+
     async function handleData() {
       const data = await d3.csv('./data/Weather Data in India from 1901 to 2017.csv')
-      console.log(data)
-      // draw things here later...
+      const year_1901 = data[0]
+      const months_1901 = convertToArray(year_1901)
+      // console.log(months_1901)
+
+      const width = 600
+      const height = 300
+      const margin = 40
+
+      // xscale
+      const xscale = d3.scaleLinear()
+        .domain([0, months_1901.length - 1])
+        .range([margin, width - margin])
+
+      // yscale
+      const yscale = d3.scaleLinear()
+        .domain(d3.extent(months_1901, d => d.temp))
+        .range([height, - margin, margin])
+
+      // line generator
+      const linegen = d3.line()
+        .x((d, i) => xscale(i))
+        .y(d => yscale(d.temp))
+        .curve(d3.curveLinear)
+
+      // Select the SVG
+      const svg = d3
+        .select('#svg')
+
+      // Make a group for the graph
+      const graph = svg
+        .append('g')
+
+      // Draw the graph
+      graph
+        .append('path')
+        .attr('d', linegen(months_1901))
+        .attr('stroke-width', 1)
+        .attr('stroke', 'cornflowerblue')
+        .attr('fill', 'none')
+
     }
 
 handleData()
