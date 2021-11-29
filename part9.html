@@ -103,6 +103,11 @@
       // precipitation scale
       const precipitationScale = d3.scaleSqrt()
 
+      // color scale
+      const colorScale = d3.scaleSequential()
+        .domain(dateExtent)
+        .interpolator(d3.interpolateRainbow)
+
       // Scatter plot
       svg
         .append('g')
@@ -113,7 +118,8 @@
         .attr('cx', d => xscale(d.date))
         .attr('cy', d => yscale(d.precipitation))
         .attr('r', d => precipitationScale(d.precipitation))
-        .attr('fill', 'rgba(255, 0, 0, 0.2)')
+        // .attr('fill', 'rgba(255, 0, 0, 0.2)')
+        .attr('fill', d => colorScale(d.date))
     }
 
     d3.csv('./data/precipitation.csv')
