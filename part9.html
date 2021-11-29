@@ -100,6 +100,9 @@
         .attr('transform', `translate(${margin}, 0)`)
         .call(leftAxis)
 
+      // precipitation scale
+      const precipitationScale = d3.scaleSqrt()
+
       // Scatter plot
       svg
         .append('g')
@@ -109,7 +112,8 @@
         .append('circle')
         .attr('cx', d => xscale(d.date))
         .attr('cy', d => yscale(d.precipitation))
-        .attr('r', 3)
+        .attr('r', d => precipitationScale(d.precipitation))
+        .attr('fill', 'rgba(255, 0, 0, 0.2)')
     }
 
     d3.csv('./data/precipitation.csv')
