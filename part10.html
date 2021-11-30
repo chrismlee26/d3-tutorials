@@ -25,16 +25,18 @@
     function convertToArray(obj) {
       const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
       return months.map(month => {
-      const temp = parseFloat(obj[month])
-      return { month: month, temp }
+        const temp = parseFloat(obj[month])
+        return { month: month, temp }
       }) 
     }
 
     async function handleData() {
       const data = await d3.csv('./data/Weather Data in India from 1901 to 2017.csv')
       const year_1901 = data[0]
+      // const year_1902 = data[1]
       const months_1901 = convertToArray(year_1901)
-      // console.log(months_1901)
+      const months_1906 = convertToArray(data[5])
+      const months_1911 = convertToArray(data[10])
 
       const width = 600
       const height = 300
@@ -71,13 +73,22 @@
         .y1(height - margin) // add this line
         .curve(d3.curveBasis)
 
-      // Draw the graph
+      // Draw graph for 1901
       graph
         .append('path')
         .attr('d', linegen(months_1901))
-        // .attr('stroke-width', 1)
-        // .attr('stroke', 'cornflowerblue')
         .attr('fill', 'rgba(255, 0, 0, 0.2)')
+
+      // Draw graph for 1902
+      graph
+        .append('path')
+        .attr('d', linegen(months_1906))
+        .attr('fill', 'rgba(5, 0, 255, 0.2)')
+
+      graph
+        .append('path')
+        .attr('d', linegen(months_1911))
+        .attr('fill', 'rgba(2, 255, 0, 0.2)')
 
       // Months scale  
       const monthsScale = d3.scaleTime()
