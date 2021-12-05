@@ -19,12 +19,48 @@
   </style>
 </head>
 <body>
-  <svg id="svg" width="800" height="800"></svg>
+  <svg id="svg" width="600" height="600"></svg>
   <script src="https://d3js.org/d3.v7.min.js"></script>
   <script>
     async function handleData() {
+      const width = 600
+      const height = 600
+      const margin = 40
+
       const data = await d3.csv("./data/cities.csv");
       console.log(data)
+
+      // Make a scale to set the color 
+      const colorScale = d3.scaleSequential()
+        .domain([0, data.length])
+        .interpolator(d3.interpolateRainbow);
+
+      // Define pie generator
+      const pieGen = d3.pie()
+
+      // Define arc data
+      const arcData = pieGen(data.map(d => d.population))
+
+      // Define arc generator
+      const arcGen = d3.arc() // make an arc generator
+        .innerRadius(15) // set inner radius 0 = pizza, + = donut
+        .outerRadius(200) // set outer diameter
+        .padAngle(0.01) // set gap between arcs (space between slices)
+
+      // Select SVG
+      const svg = d3.select("#svg")
+
+      const pieGroup = svg
+        .append('g')
+        .attr('transform', `translate(${width /2}, ${height /2})`)
+
+      const piePath = pieGroup
+        .selectAll('path') // Select all paths
+        .data(arcData) // Use the arc data 
+        .enter()
+        .append('path') // Make a path for each arc segment
+        .attr('d', arcGen) // Draw the arc segement with the generator
+        .attr('fill', (d, i) => colorScale(i)) // Use the color scale
     }
 
     handleData()
