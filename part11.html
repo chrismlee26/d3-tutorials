@@ -91,15 +91,15 @@
       // Draw the graph
       const path = graph // Save the path here! 
         .append('path')
-        .attr('d', linegen(months_1903))
+        .attr('d', linegen(months_1901))
         .attr('fill', 'rgba(0, 0, 255, 0.33)')
 
       path
         .transition()
         .duration(1000)
         .ease(d3.easeExpIn) // Add an easing function here! 
-        .attr('d', linegen(convertToArray(data[index])))
-        .attr('fill', fillColor)
+        // .attr('d', linegen(convertToArray(data[index])))
+        // .attr('fill', fillColor)
 
       // Draw graph for 1901
       graph
@@ -129,23 +129,21 @@
         .attr('transform', `translate(${margin}, 0)`)
         .call(leftAxis)
 
-
-    }
+      document.querySelector('select').addEventListener('change', e => {
+        const index = parseInt(e.target.value)
+        const hue = 360 / 12 * index 
+        const fillColor = `hsla(${hue}, 100%, 50%, 0.33)`
+        
+        // Update the path here! 
+        path
+        .transition() // Add a tranistion
+        .duration(1000) // set the duration
+        .attr('d', linegen(convertToArray(data[index])))
+        .attr('fill', fillColor)
+    })
+  }
 
   handleData()
-
-  document.querySelector('select')
-    .addEventListener('change', e => {
-    const index = parseInt(e.target.value)
-    const hue = 360 / 12 * index 
-    const fillColor = `hsla(${hue}, 100%, 50%, 0.33)`
-    // Update the path here! 
-    path
-    .transition() // Add a tranistion
-    .duration(1000) // set the duration
-    .attr('d', linegen(convertToArray(data[index])))
-    .attr('fill', fillColor)
-  })
 
   </script>
 </body>
