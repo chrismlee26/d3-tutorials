@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Part 11: Interaction</title>
+  <style>
+    body, html {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #svg {
+      border: 1px solid;
+    }
+
+    select {
+      font-size: 1rem;
+      margin: 1rem 0;
+      align-self: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <svg id="svg" width="600" height="300"></svg>
+  <select>
+    <option value="0">1901</option>
+    <option value="1">1902</option>
+    <option value="2">1903</option>
+    <option value="3">1904</option>
+    <option value="4">1905</option>
+  </select>
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script>
+    function convertToArray(obj) {
+      const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
+      return months.map(month => {
+        const temp = parseFloat(obj[month])
+        return { month: month, temp }
+      }) 
+    }
+
+    async function handleData() {
+      const data = await d3.csv('./data/Weather Data in India from 1901 to 2017.csv')
+
+      const width = 600
+      const height = 300
+      const margin = 40
+
+      const year_1901 = data[0]
+      const months_1901 = convertToArray(year_1901)
+
+      const years = data.slice(0, 5)
+      let months = []
+      for (let i = 0; i < 5; i += 1) {
+        const year = data[i]
+        const newMonths = convertToArray(year)
+        months = months.concat(newMonths)
+      }
+
+      // xscale
+      const xscale = d3.scaleLinear()
+        .domain([0, months_1901.length - 1])
+        .range([margin, width - margin])
+
+      // yscale
+      const yscale = d3.scaleLinear()
+        .domain(d3.extent(months_1901, d => d.temp))
+        .range([height - margin, margin])
+
+      // Select the SVG
+      const svg = d3
+        .select('#svg')
+
+      // Make a group for the graph
+      const graph = svg
+        .append('g')
+
+      const linegen = d3.area() // change line to area
+        .x((d, i) => xscale(i))
+        .y0(d => yscale(d.temp)) // change y to y0
+        .y1(height - margin) // add this line
+        .curve(d3.curveBasis)
+
+      // Draw the graph
+      const path = graph // Save the path here! 
+        .append('path')
+        .attr('d', linegen(months_1903))
+        .attr('fill', 'rgba(0, 0, 255, 0.33)')
+
+      path
+        .transition()
+        .duration(1000)
+        .ease(d3.easeExpIn) // Add an easing function here! 
+        .attr('d', linegen(convertToArray(data[index])))
+        .attr('fill', fillColor)
+
+      // Draw graph for 1901
+      graph
+        .append('path')
+        .attr('d', linegen(months_1901))
+        .attr('fill', 'rgba(255, 0, 0, 0.2)')
+
+      // Months scale  
+      const monthsScale = d3.scaleTime()
+        .domain([ new Date('1901-01-01'), new Date('1901-12-01') ])
+        .range([margin, width - margin])
+        .nice()
+
+      // make the generator
+      const bottomAxis = d3.axisBottom(monthsScale) 
+      const leftAxis = d3.axisLeft(yscale)
+
+      // Bottom axis
+      svg
+        .append('g')
+        .attr('transform', `translate(0, ${height - margin})`)
+        .call(bottomAxis)
+
+      // Left axis
+      svg
+        .append('g')
+        .attr('transform', `translate(${margin}, 0)`)
+        .call(leftAxis)
+
+
+    }
+
+  handleData()
+
+  document.querySelector('select')
+    .addEventListener('change', e => {
+    const index = parseInt(e.target.value)
+    const hue = 360 / 12 * index 
+    const fillColor = `hsla(${hue}, 100%, 50%, 0.33)`
+    // Update the path here! 
+    path
+    .transition() // Add a tranistion
+    .duration(1000) // set the duration
+    .attr('d', linegen(convertToArray(data[index])))
+    .attr('fill', fillColor)
+  })
+
+  </script>
+</body>
+</html>
