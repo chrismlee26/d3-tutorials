@@ -30,8 +30,19 @@
       const data = await d3.csv("./data/cities.csv");
       console.log(data)
 
-      // Make a scale to set the color 
+      const mapCountryPopulation = d3.map(data, d => ({
+        country: d.country,
+        population: +d.population
+      }))
+      console.log(mapCountryPopulation)
+
+      // Make a scale to set city color
       const colorScale = d3.scaleSequential()
+        .domain([0, data.length])
+        .interpolator(d3.interpolateRainbow);
+
+      // Make a scale to set country color
+      const countryColorScale = d3.scaleSequential()
         .domain([0, data.length])
         .interpolator(d3.interpolateRainbow);
 
@@ -78,13 +89,13 @@
         .enter()
         .append('path') // Make a path for each arc segment
         .attr('d', countryGen) // Draw the arc segement with the generator
-        .attr('fill', (d, i) => colorScale(i)) // Use the color scale
+        .attr('fill', (d, i) => countryColorScale(i)) // Use the color scale
 
       // Add labels to pie chart
       const labels = svg
         .append('g')
 
-      // Add color dots to labels
+      // Add color dots to legend
       labels
         .selectAll('circle')
         .data(data)
@@ -95,7 +106,7 @@
         .attr('cy', (d, i) => (i * 20) + 15)
         .attr('fill', (d, i) => colorScale(i))
 
-      // Add text to labels
+      // Add text to legend
       labels
         .selectAll('text')
         .data(data)
@@ -104,6 +115,25 @@
         .text(d => (`${d.label}` + ', ' + `${d.country}`))
         .attr('x', 20)
         .attr('y', (d, i) => (i * 20) + 20)
+
+      // Add labels to country chart
+      const countryLabels = svg
+        .append('g')
+
+      // Add color dots to labels
+      countryLabels
+        .selectAll('text')
+        .data(mapCountryPopulation)
+        .enter()
+        .append('text')
+        .text(d => (mapCountryPopulation.country))
+        // .attr('x', d => (d.x) + 20 + (Math.cos(Math.PI * 1.75) * d.country))
+        // .attr('y', d => (d.y) + -10 + (Math.sin(Math.PI * 1.75) * d.population))
+        .attr('font-family', 'Helvetica')
+        .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'middle')
+        .style('mix-blend-mode', 'difference')
+        .style('fill', 'white')
     }
 
     handleData()
