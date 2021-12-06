@@ -47,10 +47,83 @@
           children: cities 
         })
       })
-
       // console.log(byCountry)
+      const root = d3.hierarchy(byCountry)
 
+      root.sum(d => {return d.population})
 
+      // Pack - Create a pack function
+      const pack = d3.pack()
+        .size([500, 500]) // Set the size of the area
+        .padding(2) // define some padding between each circle
+
+      // Create a root node for d3 to draw
+      const rootNode = pack(root) // Must call sum() first! 
+      // This adds new properties to the root data
+      // console.log(rootNode)
+
+      // Number formatter
+      const num_f = d3.format(".2s")
+
+      // Create a color scale 
+      const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+
+      // Start drawing circles! 
+      const nodes = d3.select('#svg')
+        .selectAll('g')
+        .data(rootNode.descendants())
+        .join('g')
+        .attr('transform', d => `translate(${d.x}, ${d.y})`)
+
+      nodes
+        .append('circle')
+        .attr('r', d => d.r) // get the radius
+        .attr('fill', d => {
+          if (d.data.country === undefined) {
+            return colorScale(d.data.label)
+          }
+          return colorScale(d.data.country)
+        })
+        .attr('opacity', '0.5')
+
+      nodes
+        .append('text')
+        .text(d => `${num_f(d.data.population)}`)
+        .attr('font-family', 'Helvetica')
+        .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'middle')
+        .style('fill', 'white')
+        .attr('transform', `translate(0, 8)`)
+
+      // nodes
+      //   .append('text')
+      //   .text(d => `${d.data.label}`)
+      //   .attr('font-family', 'Helvetica')
+      //   .style('text-anchor', 'middle')
+      //   .style('alignment-baseline', 'middle')
+      //   .style('fill', 'white')
+      //   .attr('transform', `translate(0, 8)`)
+      
+      nodes
+        .append('text')
+        .text(d => `${d.data.label}`)
+        .attr('font-family', 'Helvetica')
+        .style('text-anchor', 'middle')
+        .style('alignment-baseline', 'middle')
+        // set the fill color to black for country and world
+        .style('fill', d => {
+          if (d.data.country === undefined) {
+            return 'black'
+          }
+          return 'white'
+        })
+        // Offset the y by the radius for the country and world
+        .attr('transform', d => {
+          if (d.data.country === undefined) {
+            return `translate(0, -${d.r})`
+          }
+          return 'translate(0, -8)'
+        })
     }
     handleData()
   </script>
